@@ -84,6 +84,7 @@ public class ContactsController extends BaseController {
     private ArrayList<TLRPC.PrivacyRule> addedByPhonePrivacyRules;
     private ArrayList<TLRPC.PrivacyRule> voiceMessagesRules;
     private ArrayList<TLRPC.PrivacyRule> birthdayPrivacyRules;
+    private ArrayList<TLRPC.PrivacyRule> giftsPrivacyRules;
     private TLRPC.TL_globalPrivacySettings globalPrivacySettings;
 
     public final static int PRIVACY_RULES_TYPE_LASTSEEN = 0;
@@ -98,8 +99,9 @@ public class ContactsController extends BaseController {
     public final static int PRIVACY_RULES_TYPE_BIO = 9;
     public final static int PRIVACY_RULES_TYPE_MESSAGES = 10;
     public final static int PRIVACY_RULES_TYPE_BIRTHDAY = 11;
+    public final static int PRIVACY_RULES_TYPE_GIFTS = 12;
 
-    public final static int PRIVACY_RULES_TYPE_COUNT = 12;
+    public final static int PRIVACY_RULES_TYPE_COUNT = 13;
 
     private class MyContentObserver extends ContentObserver {
 
@@ -331,6 +333,7 @@ public class ContactsController extends BaseController {
         profilePhotoPrivacyRules = null;
         bioPrivacyRules = null;
         birthdayPrivacyRules = null;
+        giftsPrivacyRules = null;
         forwardsPrivacyRules = null;
         phonePrivacyRules = null;
 
@@ -731,17 +734,17 @@ public class ContactsController extends BaseController {
 
                         if (type == ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM) {
                             String custom = pCur.getString(3);
-                            contact.phoneTypes.add(custom != null ? custom : LocaleController.getString("PhoneMobile", R.string.PhoneMobile));
+                            contact.phoneTypes.add(custom != null ? custom : LocaleController.getString(R.string.PhoneMobile));
                         } else if (type == ContactsContract.CommonDataKinds.Phone.TYPE_HOME) {
-                            contact.phoneTypes.add(LocaleController.getString("PhoneHome", R.string.PhoneHome));
+                            contact.phoneTypes.add(LocaleController.getString(R.string.PhoneHome));
                         } else if (type == ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE) {
-                            contact.phoneTypes.add(LocaleController.getString("PhoneMobile", R.string.PhoneMobile));
+                            contact.phoneTypes.add(LocaleController.getString(R.string.PhoneMobile));
                         } else if (type == ContactsContract.CommonDataKinds.Phone.TYPE_WORK) {
-                            contact.phoneTypes.add(LocaleController.getString("PhoneWork", R.string.PhoneWork));
+                            contact.phoneTypes.add(LocaleController.getString(R.string.PhoneWork));
                         } else if (type == ContactsContract.CommonDataKinds.Phone.TYPE_MAIN) {
-                            contact.phoneTypes.add(LocaleController.getString("PhoneMain", R.string.PhoneMain));
+                            contact.phoneTypes.add(LocaleController.getString(R.string.PhoneMain));
                         } else {
-                            contact.phoneTypes.add(LocaleController.getString("PhoneOther", R.string.PhoneOther));
+                            contact.phoneTypes.add(LocaleController.getString(R.string.PhoneOther));
                         }
                         shortContacts.put(shortNumber, contact);
                     }
@@ -889,7 +892,7 @@ public class ContactsController extends BaseController {
                                     contact.phones.add(phoneBookContact.phone);
                                     contact.shortPhones.add(shortNumber);
                                     contact.phoneDeleted.add(0);
-                                    contact.phoneTypes.add(LocaleController.getString("PhoneOther", R.string.PhoneOther));
+                                    contact.phoneTypes.add(LocaleController.getString(R.string.PhoneOther));
                                     if (contactsMap == null) {
                                         contactsMap = new HashMap<>();
                                     }
@@ -2690,6 +2693,9 @@ public class ContactsController extends BaseController {
                 case PRIVACY_RULES_TYPE_BIRTHDAY:
                     req.key = new TLRPC.TL_inputPrivacyKeyBirthday();
                     break;
+                case PRIVACY_RULES_TYPE_GIFTS:
+                    req.key = new TLRPC.TL_inputPrivacyKeyStarGiftsAutoSave();
+                    break;
                 case PRIVACY_RULES_TYPE_ADDED_BY_PHONE:
                     req.key = new TLRPC.TL_inputPrivacyKeyAddedByPhone();
                     break;
@@ -2724,6 +2730,9 @@ public class ContactsController extends BaseController {
                             break;
                         case PRIVACY_RULES_TYPE_BIRTHDAY:
                             birthdayPrivacyRules = rules.rules;
+                            break;
+                        case PRIVACY_RULES_TYPE_GIFTS:
+                            giftsPrivacyRules = rules.rules;
                             break;
                         case PRIVACY_RULES_TYPE_FORWARDS:
                             forwardsPrivacyRules = rules.rules;
@@ -2789,6 +2798,8 @@ public class ContactsController extends BaseController {
                 return bioPrivacyRules;
             case PRIVACY_RULES_TYPE_BIRTHDAY:
                 return birthdayPrivacyRules;
+            case PRIVACY_RULES_TYPE_GIFTS:
+                return giftsPrivacyRules;
             case PRIVACY_RULES_TYPE_FORWARDS:
                 return forwardsPrivacyRules;
             case PRIVACY_RULES_TYPE_PHONE:
@@ -2823,6 +2834,9 @@ public class ContactsController extends BaseController {
                 break;
             case PRIVACY_RULES_TYPE_BIRTHDAY:
                 birthdayPrivacyRules = rules;
+                break;
+            case PRIVACY_RULES_TYPE_GIFTS:
+                giftsPrivacyRules = rules;
                 break;
             case PRIVACY_RULES_TYPE_FORWARDS:
                 forwardsPrivacyRules = rules;
@@ -2997,7 +3011,7 @@ public class ContactsController extends BaseController {
     @NonNull
     public static String formatName(String firstName, String lastName, int maxLength) {
         /*if ((firstName == null || firstName.length() == 0) && (lastName == null || lastName.length() == 0)) {
-            return LocaleController.getString("HiddenName", R.string.HiddenName);
+            return LocaleController.getString(R.string.HiddenName);
         }*/
         if (firstName != null) {
             firstName = firstName.trim();
