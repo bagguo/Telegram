@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,6 +62,8 @@ import org.telegram.ui.bots.BotWebViewAttachedSheet;
 import java.util.ArrayList;
 
 public abstract class BaseFragment {
+
+    private static final String TAG = "BaseFragment";
 
     protected boolean isFinished;
     protected boolean finishing;
@@ -441,6 +444,7 @@ public abstract class BaseFragment {
 
     @CallSuper
     public void onResume() {
+        Log.d(TAG, "onResume: ====" + this.getClass().getSimpleName());
         isPaused = false;
         if (actionBar != null) {
             actionBar.onResume();
